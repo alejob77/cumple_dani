@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi galaxia eres tú feliz cumpleaños</title>
+    <meta property="og:title" content="Mi galaxia eres tú feliz cumpleaños">
+    <meta property="og:image" content="https://mi-universo-perfecto.netlify.app/assets/icon.webp">
+    <meta property="og:url" content="https://mi-universo-perfecto.netlify.app/">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+    <link rel="icon" href="https://mi-universo-perfecto.netlify.app/assets/icon.webp">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            width: 100%; height: 100%;
+            width: 100vw; height: 100vh;
+            height: 100dvh;
+            background-color: #000000;
+            font-family: 'Patrick Hand', cursive;
+            overflow: hidden;
+            cursor: grab;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body:active { cursor: grabbing; }
+
+        #galaxy-canvas {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            z-index: 1;
+            touch-action: none;
+        }
+
+        #emoji-hint {
+            display: none;
+            position: fixed;
+            left: 50%;
+            bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+            transform: translateX(-50%);
+            z-index: 2;
+            width: max-content;
+            max-width: calc(100vw - 32px);
+            padding: 10px 18px;
+            border: 1px solid rgba(232,162,168,0.75);
+            border-radius: 999px;
+            background: rgba(16,11,19,0.82);
+            box-shadow: 0 0 16px rgba(217,127,136,0.4);
+            color: #fff;
+            font-size: clamp(0.95rem, 4vw, 1.2rem);
+            line-height: 1.2;
+            text-align: center;
+            pointer-events: none;
+            animation: hintPulse 2.4s infinite ease-in-out;
+        }
+
+        @keyframes hintPulse {
+            0%, 100% { opacity: 0.8; }
+            50%       { opacity: 1; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #emoji-hint { animation: none; }
+        }
+
+        /* Canvas estrellas del intro */
+        #stars-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 9991;
+            pointer-events: none;
+        }
+
+        /* Overlay oscuro inicial */
+        #dark-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #000000;
+            z-index: 9990;
+        }
+
+        /* Modal de entrada */
+        #entry-modal {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 320px;
+            height: 390px;
+            background-color: #000000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+            z-index: 9999;
+            padding: 24px 20px;
+            border: 2px solid #4DA3FF;
+            border-radius: 24px;
+            box-shadow: 0 0 30px #4DA3FF, 0 0 70px rgba(77,163,255,0.35), inset 0 0 20px rgba(77,163,255,0.08);
+        }
+
+        #entry-photo {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #4DA3FF;
+            box-shadow: 0 0 20px #4DA3FF, 0 0 45px rgba(77,163,255,0.4);
+            margin-bottom: 22px;
+            animation: fotoPulse 2.5s infinite ease-in-out;
+        }
+
+        @keyframes fotoPulse {
+            0%, 100% { box-shadow: 0 0 20px #4DA3FF, 0 0 45px rgba(77,163,255,0.4); }
+            50%       { box-shadow: 0 0 38px #7EC8FF, 0 0 80px rgba(126,200,255,0.55); }
+        }
+
+        #entry-button {
+            padding: 14px 50px;
+            border: 2px solid #4DA3FF;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #7EC8FF, #4DA3FF);
+            color: #ffffff;
+            font-family: 'Patrick Hand', cursive;
+            font-size: 1.9em;
+            font-weight: 700;
+            cursor: pointer;
+            filter: drop-shadow(0 0 12px #4DA3FF) drop-shadow(0 0 22px #7EC8FF);
+            transition: transform 0.25s ease, filter 0.25s ease;
+            margin-bottom: 16px;
+            animation: latido 1.6s infinite ease-in-out;
+        }
+
+        #entry-button:hover {
+            transform: scale(1.06);
+            filter: drop-shadow(0 0 24px #7EC8FF) drop-shadow(0 0 42px #4DA3FF);
+        }
+
+        @keyframes latido {
+            0%, 100% { transform: scale(1); }
+            50%       { transform: scale(1.07); }
+        }
+
+        #entry-text {
+            font-size: 1.7em;
+            color: #7EC8FF;
+            text-shadow: 0 0 10px #4DA3FF;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        /* Love card overlay */
+        #love-card-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            height: 100dvh;
+            background-color: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+            cursor: pointer;
+        }
+
+        #love-card {
+            position: relative;
+            width: min(90vw, 400px);
+            max-height: calc(100dvh - 32px);
+            border-radius: 20px;
+            box-shadow: 0 0 30px #E8A2A8, 0 0 50px #D97F88;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+            text-align: center;
+            overflow: hidden;
+            background: #100b13;
+            cursor: default;
+        }
+
+        #love-card-image {
+            display: block;
+            width: 100%;
+            max-height: 60vh;
+            max-height: 60dvh;
+            object-fit: contain;
+            border-radius: 12px;
+        }
+
+        #love-card-text {
+            margin-top: 12px;
+            font-size: clamp(1.25rem, 6vw, 2rem);
+            line-height: 1.2;
+            color: #ffffff;
+            text-shadow: 0 0 8px black, 0 0 15px black;
+            overflow-wrap: anywhere;
+        }
+
+        @media (max-width: 768px) {
+            #love-card { padding: 12px; }
+            #love-card-image { max-height: 55vh; max-height: 55dvh; }
+            #entry-modal {
+                width: min(290px, calc(100vw - 32px));
+                height: min(370px, calc(100dvh - 32px));
+                padding: 20px 16px;
+            }
+            #entry-photo {
+                width: clamp(110px, 38vw, 150px);
+                height: clamp(110px, 38vw, 150px);
+                margin-bottom: 16px;
+            }
+            #entry-button {
+                width: 100%;
+                padding: 12px 8px;
+                font-size: clamp(1.35rem, 7vw, 1.8rem);
+                white-space: nowrap;
+            }
+            #entry-text { font-size: clamp(1.35rem, 7vw, 1.7rem); }
+        }
+        @media (max-height: 500px) {
+            #entry-modal {
+                width: min(420px, calc(100vw - 24px));
+                height: auto;
+                padding: 12px;
+            }
+            #entry-photo {
+                width: 90px;
+                height: 90px;
+                margin-bottom: 8px;
+            }
+            #entry-button { margin-bottom: 8px; }
+            #love-card-image { max-height: 42dvh; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="dark-overlay"></div>
+    <canvas id="stars-canvas"></canvas>
+
+    <div id="entry-modal">
+        <img id="entry-photo"
+             src="fotos/DJI.JPG"
+             alt="Foto especial"
+             onerror="this.onerror=null;this.src='fotos/foto1.jpg'">
+        <button id="entry-button">preciona aqui amor</button>
+        <div id="entry-text">feliz cumpleaños💙</div>
+    </div>
+
+    <div id="love-card-overlay" onclick="hideLoveCard()">
+        <div id="love-card">
+            <img id="love-card-image" src="fotos/foto1.jpg" alt="Recuerdo especial">
+            <p id="love-card-text">Hoy quiero celebrar tu vida y desearte que tu mundo siempre este lleno de colores hermosos feliz cumpleaños amor.</p>
+        </div>
+    </div>
+
+    <audio id="background-music" loop></audio>
+    <canvas id="galaxy-canvas"></canvas>
+    <div id="emoji-hint" role="status">Toca un emoji para descubrir un mesaje para ti xoxo</div>
+
+    <script>
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.onkeydown = function(e) {
+            if (
+                e.keyCode === 123 ||
+                (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(String.fromCharCode(e.keyCode))) ||
+                (e.ctrlKey && ['U','S'].includes(String.fromCharCode(e.keyCode)))
+            ) return false;
+        };
+
+        /* ===== ESTRELLAS TWINKLE DEL INTRO ===== */
+        (function() {
+            const cv  = document.getElementById('stars-canvas');
+            const ctx = cv.getContext('2d');
+            let stars = [], raf;
+
+            function resize() {
+                cv.width  = window.innerWidth;
+                cv.height = window.innerHeight;
+            }
+
+            function makeStars() {
+                stars = [];
+                const n = Math.floor((cv.width * cv.height) / 3000) + 200;
+                for (let i = 0; i < n; i++) {
+                    stars.push({
+                        x:     Math.random() * cv.width,
+                        y:     Math.random() * cv.height,
+                        r:     Math.random() * 1.5 + 0.15,
+                        alpha: Math.random(),
+                        speed: Math.random() * 0.007 + 0.002,
+                        dir:   Math.random() < 0.5 ? 1 : -1,
+                        blue:  Math.random() < 0.12
+                    });
+                }
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, cv.width, cv.height);
+                for (const s of stars) {
+                    s.alpha += s.speed * s.dir;
+                    if (s.alpha > 1)    { s.alpha = 1;    s.dir = -1; }
+                    if (s.alpha < 0.04) { s.alpha = 0.04; s.dir =  1; }
+                    const color = s.blue
+                        ? `hsl(210,100%,${75+Math.random()*20}%)`
+                        : `hsl(0,0%,${85+Math.random()*15}%)`;
+                    ctx.save();
+                    ctx.globalAlpha = s.alpha;
+                    ctx.fillStyle   = color;
+                    ctx.shadowColor = color;
+                    ctx.shadowBlur  = s.r * 5;
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+                raf = requestAnimationFrame(draw);
+            }
+
+            window.stopIntroStars = function() {
+                cancelAnimationFrame(raf);
+                cv.style.display = 'none';
+            };
+
+            resize();
+            makeStars();
+            draw();
+            window.addEventListener('resize', () => { resize(); makeStars(); });
+        })();
+    </script>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls }   from 'three/addons/controls/OrbitControls.js';
+    import { EffectComposer }  from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass }      from 'three/addons/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+    const CONFIG = {
+        galaxy:   { rotationSpeed: 0.12 },
+        elementExclusionRadius: 40,
+        blackHole: { radius: 12, segments: 64, color1: '#000000', color2: '#050505' },
+        accretionRing: {
+            innerRadius: 18, outerRadius: 32, segments: 128,
+            centerColor: '#FF8FA3', midColor: '#E8102A', edgeColor: '#8B0000',
+            emissiveIntensity: 1.0,
+        },
+        heartStars: { count: 2500, scale: 14, yOffset: 45, size: 0.9, color: '#FF2255' },
+        particles: {
+            coreStars:      { count: 20000, radius: 120, maxHeight: 60, size: 0.25 },
+            sphericalHalo:  { count: 18000, radiusXZ: 110, radiusY: 55, size: 0.18, minDistFromCenter: 28 },
+            backgroundStars:{ count: 10000, radius: 3000, size: 0.35 },
+            texts: {
+                // AGREGA AQUÍ TUS RECUERDOS:
+                // Cada elemento tendrá una foto y, justo debajo, su palabra o frase.
+                // Guarda las imágenes en una carpeta "fotos" junto al HTML.
+                // Duplica un bloque para agregar más recuerdos.
+                count: 16, width: 45, height: 20, minRadius: null, maxRadius: 120,
+                content: [
+                    { text: "MOMENTOS QUE NUNCA OLVIDAREMOS", image: "fotos/foto1.jpg" },
+                    { text: "Nuestros primeros recuerdos", image: "fotos/foto2.jpg" },
+                    { text: "Instantes que no olvidaremos", image: "fotos/foto3.jpg" },
+                    { text: "Elegirnos cada día", image: "fotos/foto4.jpg" },
+                    { text: "Construyendo nuestra historia", image: "fotos/foto5.jpg" },
+                    { text: "Nuestro amor se hizo familia", image: "fotos/foto6.jpg" },
+                    { text: "Los pequeños grandes momentos", image: "fotos/foto7.jpg" },
+                    { text: "luegares que siempre recordaremos", image: "fotos/foto8.jpg" },
+                    { text: "muchos momentos", image: "fotos/foto9.jpg" },
+                    { text: "fotos y recuerdos", image: "fotos/foto10.jpg" },
+                    { text: "Y todavía nos queda mucho por vivir", image: "fotos/foto11.jpg" },
+                    { text: "tus cumpleaños", image: "fotos/foto12.jpg" },
+                    { text: "fechas importantes para ti", image: "fotos/foto13.jpg" },
+                    { text: "Recuerdos que atesoramos", image: "fotos/foto14.jpg" },
+                    { text: "Momentos inolvidables", image: "fotos/foto15.jpg" },
+                    { text: "siempre confia en ti te amo", image: "fotos/foto16.JPG" }
+                ],
+                colors: [
+                    { fill:'#E8A2A8', shadow:'#D97F88' },
+                    { fill:'#F6D1D5', shadow:'#E8A2A8' },
+                    { fill:'#F2B9BF', shadow:'#D97F88' }
+                ]
+            },
+            emojis: {
+                count: 10, size: 12, minRadius: null, maxRadius: 120,
+                content: ['💖','💘','💞','💕','❤️','💐','🌸','🌹','🌺','🌷'],
+                colors: [
+                    { fill:'#F6D1D5', shadow:'#D97F88' },
+                    { fill:'#F2B9BF', shadow:'#E8A2A8' },
+                    { fill:'#E8A2A8', shadow:'#D97F88' }
+                ]
+            }
+        },
+        loveCards: {
+            images: [
+                'fotos/foto1.jpg','fotos/foto2.jpg','fotos/foto3.jpg',
+                'fotos/foto4.jpg','fotos/foto5.jpg','fotos/foto6.jpg',
+                'fotos/foto7.jpg','fotos/foto8.jpg','fotos/foto9.jpg',
+                'fotos/foto10.jpg','fotos/foto11.jpg','fotos/foto12.jpg',
+                'fotos/foto13.jpg','fotos/foto14.jpg','fotos/foto15.jpg','fotos/foto16.JPG'
+            ],
+            phrases: [
+                "Admiro la forma en que haces bonito hasta los dias simples. ",
+                "Tu eres esa persona que llena mi mundo de color. ",
+                "Este detalle es para recordarte lo especial que eres para mi. ",
+                "Siempre conifa en ti mira hasta donde has llegado. ",
+                "Te admiro mucho aun que no siempre sepa como decirtelo. ",
+                "te amo mucho. ",
+                "Que lindo es ver cumplir tus sueños. ",
+                "Ojala nunca te falten motivos para sonreir y sonar en grande. "
+            ]
+        },
+        shootingStars: { enabled: true, spawnProbability: 0.012, speed: 1.2 },
+        lighting: {
+            ambientLight: { color:'#ffffff', intensity:0.1 },
+            pointLight:   { color:'#E8A2A8', intensity:2.5, distance:350 }
+        },
+        bloomEffect: { threshold:0.68, strength:0.7, radius:0.5 },
+        cameraControls: { minDistance:5, maxDistance:Infinity }
+    };
+
+    let scene, camera, renderer, controls, galaxyGroup, clock, sphereMaterial, composer;
+    let loveTexts=[], loveImages=[], shootingStars=[], occupiedPositions=[];
+    let raycaster, mouse, currentCardIndex=0, galaxyInitialized=false;
+
+    function init() {
+        if (galaxyInitialized) return;
+        galaxyInitialized = true;
+
+        scene     = new THREE.Scene();
+        clock     = new THREE.Clock();
+        raycaster = new THREE.Raycaster();
+        mouse     = new THREE.Vector2();
+
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 20000);
+
+        const cv = document.getElementById('galaxy-canvas');
+        cv.style.display = 'block';
+
+        renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1.5 : 2));
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.minDistance   = CONFIG.cameraControls.minDistance;
+        controls.maxDistance   = CONFIG.cameraControls.maxDistance;
+        controls.zoomSpeed     = 1.5;
+
+        const rp   = new RenderPass(scene, camera);
+        const bp   = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+        bp.threshold = CONFIG.bloomEffect.threshold;
+        bp.strength  = CONFIG.bloomEffect.strength;
+        bp.radius    = CONFIG.bloomEffect.radius;
+
+        composer = new EffectComposer(renderer);
+        composer.addPass(rp);
+        composer.addPass(bp);
+
+        const { ambientLight: al, pointLight: pl } = CONFIG.lighting;
+        scene.add(new THREE.AmbientLight(al.color, al.intensity));
+        const light = new THREE.PointLight(pl.color, pl.intensity, pl.distance);
+        light.position.set(0,0,0); scene.add(light);
+
+        galaxyGroup = new THREE.Group();
+        scene.add(galaxyGroup);
+
+        document.getElementById('emoji-hint').style.display = 'block';
+        createBlackHole();
+        createHeartStars();
+        createCoreStars();
+        createSphericalHalo();
+        createBackgroundStars();
+        createLoveElements();
+
+        window.addEventListener('resize', onResize);
+        renderer.domElement.addEventListener('click', onCanvasClick);
+        onResize();
+        animate();
+    }
+
+    function createBlackHole() {
+        const bh = CONFIG.blackHole, rg = CONFIG.accretionRing;
+        sphereMaterial = new THREE.ShaderMaterial({
+            uniforms: { uTime:{value:0}, uColor1:{value:new THREE.Color(bh.color1)}, uColor2:{value:new THREE.Color(bh.color2)} },
+            vertexShader:   `varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+            fragmentShader: `uniform float uTime; uniform vec3 uColor1,uColor2; varying vec2 vUv;
+                float noise(vec2 s){ return fract(sin(dot(s,vec2(12.9898,78.233)))*43758.5453123); }
+                void main(){ float n=noise(vUv*4.0+uTime*0.1); gl_FragColor=vec4(mix(uColor1,uColor2,n),1.0); }`
+        });
+        scene.add(new THREE.Mesh(new THREE.SphereGeometry(bh.radius,bh.segments,bh.segments), sphereMaterial));
+
+        const rm = new THREE.ShaderMaterial({
+            uniforms: {
+                innerRadius:{value:rg.innerRadius}, outerRadius:{value:rg.outerRadius},
+                centerColor:{value:new THREE.Color(rg.centerColor)}, midColor:{value:new THREE.Color(rg.midColor)},
+                edgeColor:{value:new THREE.Color(rg.edgeColor)}, emissiveIntensity:{value:rg.emissiveIntensity}
+            },
+            vertexShader:   `varying vec3 vPos; void main(){ vPos=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+            fragmentShader: `uniform float innerRadius,outerRadius,emissiveIntensity;
+                uniform vec3 centerColor,midColor,edgeColor; varying vec3 vPos;
+                void main(){
+                    float d=length(vPos.xy), t=clamp((d-innerRadius)/(outerRadius-innerRadius),0.0,1.0);
+                    vec3 col=t<0.5?mix(centerColor,midColor,t*2.0):mix(midColor,edgeColor,(t-0.5)*2.0);
+                    float g=1.0-smoothstep(0.0,1.0,t);
+                    gl_FragColor=vec4(col+col*emissiveIntensity*g,1.0);
+                }`,
+            side: THREE.DoubleSide
+        });
+        const ring = new THREE.Mesh(new THREE.RingGeometry(rg.innerRadius,rg.outerRadius,rg.segments), rm);
+        ring.rotation.x = Math.PI/2;
+        scene.add(ring);
+    }
+
+    function createHeartStars() {
+        const hc=CONFIG.heartStars, pos=[];
+        // Contorno denso del corazón (mayoría de puntos)
+        const outlineCount = Math.floor(hc.count * 0.75);
+        for (let i=0;i<outlineCount;i++) {
+            const t=(i/outlineCount)*Math.PI*2;
+            const x=16*Math.pow(Math.sin(t),3);
+            const y=13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);
+            // Ruido muy pequeño para que el contorno se vea nítido
+            const n=0.08;
+            const rx = x*hc.scale/16+(Math.random()-.5)*n*hc.scale;
+            const ry = hc.yOffset+y*hc.scale/16*0.85+(Math.random()-.5)*n*hc.scale;
+            pos.push(rx, ry, (Math.random()-.5)*0.3);
+        }
+        // Relleno interior con más densidad
+        const fillCount = Math.floor(hc.count * 0.25);
+        for (let i=0;i<fillCount;i++) {
+            // Muestreo aleatorio dentro del corazón usando rechazo
+            let fx, fy;
+            let attempts = 0;
+            do {
+                const t2 = Math.random()*Math.PI*2;
+                const r  = Math.random();
+                fx = 16*Math.pow(Math.sin(t2),3) * r * hc.scale/16;
+                fy = (13*Math.cos(t2)-5*Math.cos(2*t2)-2*Math.cos(3*t2)-Math.cos(4*t2)) * r * hc.scale/16;
+                attempts++;
+            } while (attempts < 10);
+            pos.push(fx, hc.yOffset+fy*0.85, (Math.random()-.5)*0.5);
+        }
+        const geo=new THREE.BufferGeometry();
+        geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(pos),3));
+        // Capa principal del corazón
+        scene.add(new THREE.Points(geo,new THREE.PointsMaterial({
+            size:hc.size, color:new THREE.Color(hc.color),
+            blending:THREE.AdditiveBlending, transparent:true, opacity:1.0, sizeAttenuation:true
+        })));
+        // Segunda capa más grande y translúcida para el resplandor (glow)
+        scene.add(new THREE.Points(geo,new THREE.PointsMaterial({
+            size:hc.size*3.5, color:new THREE.Color('#FF0044'),
+            blending:THREE.AdditiveBlending, transparent:true, opacity:0.18, sizeAttenuation:true
+        })));
+    }
+
+    function createCoreStars() {
+        const cfg=CONFIG.particles.coreStars;
+        const pos=new Float32Array(cfg.count*3), col=new Float32Array(cfg.count*3), c=new THREE.Color();
+        for (let i=0;i<cfg.count;i++) {
+            const dist=CONFIG.accretionRing.outerRadius+Math.random()*(cfg.radius-CONFIG.accretionRing.outerRadius);
+            const angle=Math.random()*Math.PI*2;
+            const y=(Math.random()-.5)*cfg.maxHeight*Math.pow(1-dist/cfg.radius,1.5);
+            pos.set([Math.cos(angle)*dist,y,Math.sin(angle)*dist],i*3);
+            c.setHSL((0.82+Math.random()*0.12)%1,0.8+Math.random()*0.2,0.6+Math.random()*0.4);
+            col.set([c.r,c.g,c.b],i*3);
+        }
+        const geo=new THREE.BufferGeometry();
+        geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+        geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+        galaxyGroup.add(new THREE.Points(geo,new THREE.PointsMaterial({
+            size:cfg.size, blending:THREE.AdditiveBlending, vertexColors:true, transparent:true
+        })));
+    }
+
+    function createSphericalHalo() {
+        const cfg=CONFIG.particles.sphericalHalo;
+        const pos=new Float32Array(cfg.count*3), col=new Float32Array(cfg.count*3), c=new THREE.Color();
+        let filled=0;
+        while (filled<cfg.count) {
+            const [rx,ry,rz]=[Math.random()*2-1,Math.random()*2-1,Math.random()*2-1];
+            if (rx*rx+ry*ry+rz*rz>1) continue;
+            const x=rx*cfg.radiusXZ, y=ry*cfg.radiusY, z=rz*cfg.radiusXZ;
+            const d=Math.sqrt(x*x+y*y+z*z);
+            if (d<cfg.minDistFromCenter) continue;
+            const rN=d/Math.max(cfg.radiusXZ,cfg.radiusY);
+            if (Math.random()>Math.pow(1-rN*0.7,1.2)) continue;
+            pos.set([x,y,z],filled*3);
+            c.setHSL((0.82+Math.random()*0.12)%1,0.6+Math.random()*0.4,0.45+Math.random()*0.45);
+            col.set([c.r,c.g,c.b],filled*3);
+            filled++;
+        }
+        const geo=new THREE.BufferGeometry();
+        geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+        geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+        galaxyGroup.add(new THREE.Points(geo,new THREE.PointsMaterial({
+            size:cfg.size, blending:THREE.AdditiveBlending, vertexColors:true, transparent:true, opacity:0.65
+        })));
+    }
+
+    function createBackgroundStars() {
+        const cfg=CONFIG.particles.backgroundStars;
+        const pos=new Float32Array(cfg.count*3);
+        for (let i=0;i<cfg.count;i++) {
+            // Distribución esférica para que se vean en todas direcciones
+            const r=300+Math.random()*cfg.radius;
+            const theta=Math.random()*Math.PI*2;
+            const phi=Math.acos(2*Math.random()-1);
+            pos.set([
+                r*Math.sin(phi)*Math.cos(theta),
+                r*Math.sin(phi)*Math.sin(theta),
+                r*Math.cos(phi)
+            ],i*3);
+        }
+        const geo=new THREE.BufferGeometry();
+        geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+        scene.add(new THREE.Points(geo,new THREE.PointsMaterial({
+            size:cfg.size, color:0xffffff, transparent:true, opacity:0.55, sizeAttenuation:true
+        })));
+    }
+
+    function createLoveElements() {
+        const tC=CONFIG.particles.texts, eC=CONFIG.particles.emojis;
+        const loader = new THREE.TextureLoader();
+
+        // Cada recuerdo es un solo conjunto: fotografía arriba y texto debajo.
+        // Al estar dentro de galaxyGroup, ambos giran junto con la galaxia.
+        for (let i=0;i<tC.count;i++) {
+            const recuerdo=tC.content[i%tC.content.length];
+            const cd=tC.colors[i%tC.colors.length];
+            const conjunto=new THREE.Group();
+
+            const fotoTexture=loader.load(
+                recuerdo.image,
+                tex => { tex.colorSpace=THREE.SRGBColorSpace; },
+                undefined,
+                () => console.warn("No se pudo cargar la foto: "+recuerdo.image)
+            );
+            const foto=new THREE.Mesh(
+                new THREE.PlaneGeometry(25,18),
+                new THREE.MeshBasicMaterial({map:fotoTexture,transparent:true,side:THREE.DoubleSide})
+            );
+            foto.position.y=11;
+            conjunto.add(foto);
+
+            const tex=createTextTexture(recuerdo.text,cd);
+            const palabra=new THREE.Mesh(
+                new THREE.PlaneGeometry(tC.width,tC.height),
+                new THREE.MeshPhongMaterial({map:tex,transparent:true,alphaTest:0.1,emissive:cd.fill,emissiveIntensity:1.2,side:THREE.DoubleSide})
+            );
+            palabra.position.y=-11;
+            conjunto.add(palabra);
+
+            setPos(conjunto,tC.minRadius,tC.maxRadius);
+            galaxyGroup.add(conjunto);
+            loveTexts.push(palabra);
+        }
+        for (let i=0;i<eC.count;i++) {
+            const cd=eC.colors[i%eC.colors.length];
+            const tex=createEmojiTexture(eC.content[i%eC.content.length],cd);
+            const m=new THREE.Mesh(new THREE.PlaneGeometry(eC.size,eC.size),
+                new THREE.MeshBasicMaterial({map:tex,transparent:true,alphaTest:0.1}));
+            setPos(m,eC.minRadius,eC.maxRadius);
+            galaxyGroup.add(m); loveImages.push(m);
+        }
+    }
+
+    function setPos(el,minR,maxR) {
+        const sMin=minR||CONFIG.elementExclusionRadius, sMax=maxR||CONFIG.particles.coreStars.radius;
+        let valid=false,tries=0,pos={x:0,y:0,z:0};
+        while (!valid&&tries<50) {
+            tries++;
+            const r=sMin+Math.random()*(sMax-sMin), a=Math.random()*Math.PI*2;
+            const y=(Math.random()-.5)*30, x=r*Math.cos(a), z=r*Math.sin(a);
+            valid=occupiedPositions.every(p=>Math.sqrt((x-p.x)**2+(y-p.y)**2+(z-p.z)**2)>=18);
+            if (valid) pos={x,y,z};
+        }
+        el.position.set(pos.x,pos.y,pos.z);
+        occupiedPositions.push(pos);
+    }
+
+    function createTextTexture(text,color) {
+        const cv=document.createElement('canvas'); cv.width=1536; cv.height=512;
+        const ctx=cv.getContext('2d');
+        ctx.font='84px "Patrick Hand",cursive';
+        ctx.fillStyle=color.fill; ctx.shadowColor=color.shadow; ctx.shadowBlur=3;
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        const words=text.split(' '); let lines=[],cur=words[0];
+        for (let i=1;i<words.length;i++) {
+            const t=cur+' '+words[i];
+            if (ctx.measureText(t).width>1436&&cur.length>0){lines.push(cur);cur=words[i];}
+            else cur=t;
+        }
+        lines.push(cur);
+        const sy=cv.height/2-(lines.length-1)*100/2;
+        lines.forEach((l,i)=>ctx.fillText(l,cv.width/2,sy+i*100));
+        return new THREE.CanvasTexture(cv);
+    }
+
+    function createEmojiTexture(emoji,cd) {
+        const cv=document.createElement('canvas'); cv.width=cv.height=512;
+        const ctx=cv.getContext('2d');
+        ctx.clearRect(0,0,512,512);
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.font='320px "Segoe UI Emoji","Apple Color Emoji",sans-serif';
+        ctx.shadowColor=cd.shadow; ctx.shadowBlur=24; ctx.fillStyle=cd.fill;
+        ctx.fillText(emoji,256,272);
+        const t=new THREE.CanvasTexture(cv);
+        t.colorSpace=THREE.SRGBColorSpace;
+        t.generateMipmaps=false;
+        t.minFilter=t.magFilter=THREE.LinearFilter;
+        return t;
+    }
+
+    function createShootingStar() {
+        const geo=new THREE.BufferGeometry();
+        geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array([0,0,0]),3));
+        const star=new THREE.Points(geo,new THREE.PointsMaterial({color:0xffffff,size:1.8,blending:THREE.AdditiveBlending,transparent:true}));
+        star.position.set(THREE.MathUtils.randFloatSpread(800),THREE.MathUtils.randFloat(100,300),THREE.MathUtils.randFloatSpread(800));
+        star.userData.velocity=new THREE.Vector3((Math.random()<.5?-1:1)*CONFIG.shootingStars.speed,-CONFIG.shootingStars.speed*.5,(Math.random()-.5)*2);
+        star.userData.life=0;
+        shootingStars.push(star); scene.add(star);
+    }
+
+    function onResize() {
+        const w=window.innerWidth, h=window.innerHeight;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, w < 768 ? 1.5 : 2));
+        renderer.setSize(w,h); composer.setSize(w,h);
+        camera.aspect=w/h;
+        camera.position.set(0,35,w<768?150:120);
+        camera.updateProjectionMatrix();
+    }
+
+    function onCanvasClick(e) {
+        mouse.x=(e.clientX/window.innerWidth)*2-1;
+        mouse.y=-(e.clientY/window.innerHeight)*2+1;
+        raycaster.setFromCamera(mouse,camera);
+        if (raycaster.intersectObjects(loveImages).length>0) showLoveCard();
+    }
+
+    function showLoveCard() {
+        const overlay=document.getElementById('love-card-overlay');
+        const image=document.getElementById('love-card-image');
+        const text=document.getElementById('love-card-text');
+        const cfg=CONFIG.loveCards;
+        image.src=cfg.images[currentCardIndex];
+        text.textContent=cfg.phrases[currentCardIndex%cfg.phrases.length];
+        overlay.style.display='flex';
+        currentCardIndex=(currentCardIndex+1)%cfg.images.length;
+    }
+
+    window.hideLoveCard=function(){ document.getElementById('love-card-overlay').style.display='none'; };
+
+    function animate() {
+        requestAnimationFrame(animate);
+        const t=clock.getElapsedTime();
+        galaxyGroup.rotation.y=t*CONFIG.galaxy.rotationSpeed;
+        if (sphereMaterial) sphereMaterial.uniforms.uTime.value=t;
+        loveTexts.forEach(m=>m.lookAt(camera.position));
+        loveImages.forEach(m=>m.lookAt(camera.position));
+        if (CONFIG.shootingStars.enabled&&Math.random()<CONFIG.shootingStars.spawnProbability) createShootingStar();
+        shootingStars.forEach((s,i)=>{
+            s.position.add(s.userData.velocity);
+            if (++s.userData.life>300){ scene.remove(s); shootingStars.splice(i,1); }
+        });
+        controls.update();
+        composer.render();
+    }
+
+    document.getElementById('entry-button').addEventListener('click', () => {
+        document.getElementById('entry-modal').style.display  = 'none';
+        document.getElementById('dark-overlay').style.display = 'none';
+        window.stopIntroStars();
+        init();
+
+        const music = document.getElementById('background-music');
+        music.src = 'Martina%20La%20Peligrosa%20-%20Cafecito%20Para%20Dos.mp3';
+        music.load();
+        music.addEventListener('loadedmetadata', () => {
+            music.currentTime = 0;
+            music.play().catch(e => console.warn('Audio:', e));
+        }, { once: true });
+    });
+
+    </script>
+</body>
+</html>
