@@ -678,7 +678,7 @@
                 new THREE.PlaneGeometry(25,18),
                 new THREE.MeshBasicMaterial({map:fotoTexture,transparent:true,side:THREE.DoubleSide})
             );
-            foto.position.y=11;
+            foto.position.y=8;
             conjunto.add(foto);
 
             const tex=createTextTexture(recuerdo.text,cd);
@@ -686,7 +686,7 @@
                 new THREE.PlaneGeometry(tC.width,tC.height),
                 new THREE.MeshPhongMaterial({map:tex,transparent:true,alphaTest:0.1,emissive:cd.fill,emissiveIntensity:1.2,side:THREE.DoubleSide})
             );
-            palabra.position.y=-11;
+            palabra.position.y=-8;
             conjunto.add(palabra);
 
             setPos(conjunto,tC.minRadius,tC.maxRadius);
