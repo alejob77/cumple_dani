@@ -144,9 +144,14 @@
             animation: latido 1.6s infinite ease-in-out;
         }
 
-        #entry-button:hover {
+        #entry-button:not(:disabled):hover {
             transform: scale(1.06);
             filter: drop-shadow(0 0 24px #7EC8FF) drop-shadow(0 0 42px #4DA3FF);
+        }
+
+        #entry-button:disabled {
+            cursor: not-allowed;
+            animation: none;
         }
 
         @keyframes latido {
@@ -155,11 +160,12 @@
         }
 
         #entry-text {
-            font-size: 1.7em;
+            font-size: 1.45em;
             color: #7EC8FF;
             text-shadow: 0 0 10px #4DA3FF;
             text-align: center;
             letter-spacing: 1px;
+            line-height: 1.15;
         }
 
         /* Love card overlay */
@@ -230,7 +236,7 @@
                 font-size: clamp(1.35rem, 7vw, 1.8rem);
                 white-space: nowrap;
             }
-            #entry-text { font-size: clamp(1.35rem, 7vw, 1.7rem); }
+            #entry-text { font-size: clamp(1.15rem, 6vw, 1.45rem); }
         }
         @media (max-height: 500px) {
             #entry-modal {
@@ -816,7 +822,60 @@
         composer.render();
     }
 
-    document.getElementById('entry-button').addEventListener('click', () => {
+    const ENTRY_LOCK_KEY = 'cumple-entry-locked-until';
+    const entryButton = document.getElementById('entry-button');
+    const entryText = document.getElementById('entry-text');
+
+    function updateEntryLock() {
+        const savedUnlockAt = localStorage.getItem(ENTRY_LOCK_KEY);
+        if (savedUnlockAt === null) {
+            entryButton.disabled = false;
+            entryButton.textContent = 'preciona aqui amor';
+            entryText.textContent = 'feliz cumpleaños💙';
+            return;
+        }
+
+        const unlockAt = Number(savedUnlockAt);
+        if (!Number.isFinite(unlockAt)) {
+            localStorage.removeItem(ENTRY_LOCK_KEY);
+            entryButton.disabled = false;
+            entryButton.textContent = 'preciona aqui amor';
+            entryText.textContent = 'feliz cumpleaños💙';
+            return;
+        }
+
+        if (unlockAt <= Date.now()) {
+            entryButton.disabled = false;
+            entryButton.textContent = 'Ya puedes verme 💙';
+            entryText.textContent = 'feliz cumpleaños💙';
+            return;
+        }
+
+        entryButton.disabled = true;
+        entryButton.textContent = 'Vuelve mañana a la 1:00 p. m.';
+        entryText.textContent = 'Te amo, pero hasta mañana podrás verme a la 1:00 de la tarde.';
+        window.setTimeout(updateEntryLock, unlockAt - Date.now());
+    }
+
+    updateEntryLock();
+
+    entryButton.addEventListener('click', () => {
+        if (entryButton.disabled) return;
+
+        if (localStorage.getItem(ENTRY_LOCK_KEY) === null) {
+            const unlockAt = new Date();
+            unlockAt.setDate(unlockAt.getDate() + 1);
+            unlockAt.setHours(13, 0, 0, 0);
+            localStorage.setItem(ENTRY_LOCK_KEY, String(unlockAt.getTime()));
+            updateEntryLock();
+            return;
+        }
+
+        const unlockAt = Number(localStorage.getItem(ENTRY_LOCK_KEY));
+        if (!Number.isFinite(unlockAt) || unlockAt > Date.now()) return;
+
+        localStorage.removeItem(ENTRY_LOCK_KEY);
+
         document.getElementById('entry-modal').style.display  = 'none';
         document.getElementById('dark-overlay').style.display = 'none';
         window.stopIntroStars();
