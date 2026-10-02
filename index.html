@@ -379,7 +379,7 @@
                 // Cada elemento tendrá una foto y, justo debajo, su palabra o frase.
                 // Guarda las imágenes en una carpeta "fotos" junto al HTML.
                 // Duplica un bloque para agregar más recuerdos.
-                count: 16, width: 45, height: 20, minRadius: null, maxRadius: 120,
+                count: 25, width: 45, height: 20, minRadius: null, maxRadius: 120,
                 content: [
                     { text: "MOMENTOS QUE NUNCA OLVIDAREMOS", image: "fotos/foto1.jpg" },
                     { text: "Nuestros primeros recuerdos", image: "fotos/foto2.jpg" },
@@ -396,7 +396,16 @@
                     { text: "fechas importantes para ti", image: "fotos/foto13.jpg" },
                     { text: "Recuerdos que atesoramos", image: "fotos/foto14.jpg" },
                     { text: "Momentos inolvidables", image: "fotos/foto15.jpg" },
-                    { text: "siempre confia en ti te amo", image: "fotos/foto16.JPG" }
+                    { text: "siempre confia en ti te amo", image: "fotos/foto16.JPG" },
+                    { text: "Ellas siempre estaran para ti", image: "fotos/foto17.JPEG" },
+                    { text: "Estaran para sacarte una sonrisa", image: "fotos/foto18.JPEG" },
+                    { text: "Para llenar tu vida de alegría", image: "fotos/foto19.JPEG" },
+                    { text: "Fotos viejas que nos recuerdan historias", image: "fotos/foto20.jpg" },
+                    { text: "Poco despues de saber que nuestras vidas cambiarian", image: "fotos/foto21.jpg" },
+                    { text: "momentos que no cambiaremos por nada", image: "fotos/foto22.jpg" },
+                    { text: "siempre te amaran", image: "fotos/foto23.jpg" },
+                    { text: "siempre te amaran", image: "fotos/foto24.jpg" },
+                    { text: "siempre te amaran", image: "fotos/foto25.jpg" }
                 ],
                 colors: [
                     { fill:'#E8A2A8', shadow:'#D97F88' },
@@ -405,7 +414,7 @@
                 ]
             },
             emojis: {
-                count: 10, size: 12, minRadius: null, maxRadius: 120,
+                count: 25, size: 12, minRadius: null, maxRadius: 120,
                 content: ['💖','💘','💞','💕','❤️','💐','🌸','🌹','🌺','🌷'],
                 colors: [
                     { fill:'#F6D1D5', shadow:'#D97F88' },
@@ -420,7 +429,11 @@
                 'fotos/foto4.jpg','fotos/foto5.jpg','fotos/foto6.jpg',
                 'fotos/foto7.jpg','fotos/foto8.jpg','fotos/foto9.jpg',
                 'fotos/foto10.jpg','fotos/foto11.jpg','fotos/foto12.jpg',
-                'fotos/foto13.jpg','fotos/foto14.jpg','fotos/foto15.jpg','fotos/foto16.JPG'
+                'fotos/foto13.jpg','fotos/foto14.jpg','fotos/foto15.jpg',
+                'fotos/foto16.JPG','fotos/foto17.JPEG','fotos/foto18.JPEG',
+                'fotos/foto19.JPEG','fotos/foto20.jpg','fotos/foto21.jpg',
+                'fotos/foto22.jpg','fotos/foto23.jpg','fotos/foto24.jpg',
+                'fotos/foto25.jpg'
             ],
             phrases: [
                 "Admiro la forma en que haces bonito hasta los dias simples. ",
@@ -692,13 +705,24 @@
 
     function setPos(el,minR,maxR) {
         const sMin=minR||CONFIG.elementExclusionRadius, sMax=maxR||CONFIG.particles.coreStars.radius;
+        const minDistance = 22;
         let valid=false,tries=0,pos={x:0,y:0,z:0};
-        while (!valid&&tries<50) {
+        while (!valid&&tries<80) {
             tries++;
             const r=sMin+Math.random()*(sMax-sMin), a=Math.random()*Math.PI*2;
             const y=(Math.random()-.5)*30, x=r*Math.cos(a), z=r*Math.sin(a);
-            valid=occupiedPositions.every(p=>Math.sqrt((x-p.x)**2+(y-p.y)**2+(z-p.z)**2)>=18);
+            valid=occupiedPositions.every(p=>Math.sqrt((x-p.x)**2+(y-p.y)**2+(z-p.z)**2)>=minDistance);
             if (valid) pos={x,y,z};
+        }
+        if (!valid) {
+            const idx = occupiedPositions.length;
+            const angle = (idx + 1) * (Math.PI * (3 - Math.sqrt(5)));
+            const radius = sMin + ((idx % 7) / 7) * (sMax - sMin) + (idx % 3) * 4;
+            pos = {
+                x: radius * Math.cos(angle),
+                y: (Math.random() - 0.5) * 32,
+                z: radius * Math.sin(angle)
+            };
         }
         el.position.set(pos.x,pos.y,pos.z);
         occupiedPositions.push(pos);
