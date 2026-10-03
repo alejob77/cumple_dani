@@ -891,7 +891,16 @@
         'te amamos mucho pollito. 🥳',
         'Feliz cumpleaños a la dueña de un corazón enorme y precioso. 💗'
     ];
+    const guessingHints = [
+        '¡Upps! Todavía no es la hora, mi vida 😉',
+        'Casi... pero todavía falta un poquito 💗',
+        '¡Buena intuición! Sigue intentando ✨',
+        'Por ahí va la cosa... pero aún no 💞',
+        'Un poquito más de paciencia, mi vida 🌹',
+        '¿Ya quieres ver tu sorpresa? Todavía toca esperar 💕'
+    ];
     let phraseIndex = 0;
+    let hintIndex = 0;
     let noteCount = 0;
 
     function removeBirthdayNote(note) {
@@ -908,8 +917,11 @@
 
         const note = document.createElement('div');
         note.className = 'birthday-note';
-        note.textContent = birthdayPhrases[phraseIndex];
+        const phrase = birthdayPhrases[phraseIndex];
+        note.textContent = phrase;
         phraseIndex = (phraseIndex + 1) % birthdayPhrases.length;
+        entryText.textContent = guessingHints[hintIndex];
+        hintIndex = (hintIndex + 1) % guessingHints.length;
         const tilt = (Math.random() * 8 - 4).toFixed(1);
         note.style.setProperty('--note-tilt', `${tilt}deg`);
         note.style.setProperty('--note-drift', `${Math.round(Math.random() * 48 - 24)}px`);
