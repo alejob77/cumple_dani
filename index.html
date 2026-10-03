@@ -956,7 +956,7 @@
         const savedUnlockAt = localStorage.getItem(ENTRY_LOCK_KEY);
         if (savedUnlockAt === null) {
             entryButton.disabled = false;
-            entryButton.textContent = 'Adivina la hora';
+            entryButton.textContent = 'Adivina la hora mi vida';
             entryText.textContent = 'Tienes que adivinar la hora...';
             return;
         }
@@ -965,7 +965,7 @@
         if (!Number.isFinite(unlockAt)) {
             localStorage.removeItem(ENTRY_LOCK_KEY);
             entryButton.disabled = false;
-            entryButton.textContent = 'Adivina la hora';
+            entryButton.textContent = 'Adivina la hora mi vida';
             entryText.textContent = 'Tienes que adivinar la hora...';
             return;
         }
@@ -978,7 +978,7 @@
         }
 
         entryButton.disabled = false;
-        entryButton.textContent = 'Adivina la hora';
+        entryButton.textContent = 'Adivina la hora mi vida';
         entryText.textContent = 'Tienes que adivinar la hora...';
         window.setTimeout(updateEntryLock, unlockAt - Date.now());
     }
