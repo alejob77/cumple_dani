@@ -21,7 +21,7 @@
             width: 100%; height: 100%;
             width: 100vw; height: 100vh;
             height: 100dvh;
-            background-color: #000000;
+            background-color: #12070D;
             font-family: 'Patrick Hand', cursive;
             overflow: hidden;
             cursor: grab;
@@ -53,10 +53,10 @@
             width: max-content;
             max-width: calc(100vw - 32px);
             padding: 10px 18px;
-            border: 1px solid rgba(232,162,168,0.75);
+            border: 1px solid rgba(190,118,143,0.65);
             border-radius: 999px;
-            background: rgba(16,11,19,0.82);
-            box-shadow: 0 0 16px rgba(217,127,136,0.4);
+            background: rgba(29,9,19,0.88);
+            box-shadow: 0 0 16px rgba(181,47,93,0.45);
             color: #fff;
             font-size: clamp(0.95rem, 4vw, 1.2rem);
             line-height: 1.2;
@@ -88,7 +88,7 @@
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: #000000;
+            background: #12070D;
             z-index: 9990;
         }
 
@@ -99,7 +99,7 @@
             transform: translate(-50%, -50%);
             width: 320px;
             height: 390px;
-            background-color: #000000;
+            background: linear-gradient(160deg, #1D0913, #080508 72%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -107,9 +107,9 @@
             color: white;
             z-index: 9999;
             padding: 24px 20px;
-            border: 2px solid #4DA3FF;
+            border: 2px solid #5A102B;
             border-radius: 24px;
-            box-shadow: 0 0 30px #4DA3FF, 0 0 70px rgba(77,163,255,0.35), inset 0 0 20px rgba(77,163,255,0.08);
+            box-shadow: 0 0 30px #6F1734, 0 0 70px rgba(111,23,52,0.38), inset 0 0 20px rgba(109,23,54,0.24);
         }
 
         #entry-photo {
@@ -117,36 +117,41 @@
             height: 180px;
             border-radius: 50%;
             object-fit: cover;
-            border: 3px solid #4DA3FF;
-            box-shadow: 0 0 20px #4DA3FF, 0 0 45px rgba(77,163,255,0.4);
+            border: 3px solid #76213D;
+            box-shadow: 0 0 20px #76213D, 0 0 45px rgba(111,23,52,0.48);
             margin-bottom: 22px;
             animation: fotoPulse 2.5s infinite ease-in-out;
         }
 
         @keyframes fotoPulse {
-            0%, 100% { box-shadow: 0 0 20px #4DA3FF, 0 0 45px rgba(77,163,255,0.4); }
-            50%       { box-shadow: 0 0 38px #7EC8FF, 0 0 80px rgba(126,200,255,0.55); }
+            0%, 100% { box-shadow: 0 0 20px #76213D, 0 0 45px rgba(111,23,52,0.42); }
+            50%       { box-shadow: 0 0 32px #B76B85, 0 0 68px rgba(146,53,82,0.52); }
         }
 
         #entry-button {
             padding: 14px 50px;
-            border: 2px solid #4DA3FF;
+            border: 2px solid #76213D;
             border-radius: 999px;
-            background: linear-gradient(135deg, #7EC8FF, #4DA3FF);
+            background: linear-gradient(135deg, #64152F 0%, #4A1024 58%, #290713 100%);
             color: #ffffff;
             font-family: 'Patrick Hand', cursive;
             font-size: 1.9em;
             font-weight: 700;
             cursor: pointer;
-            filter: drop-shadow(0 0 12px #4DA3FF) drop-shadow(0 0 22px #7EC8FF);
+            filter: drop-shadow(0 0 12px #4A1024) drop-shadow(0 0 20px #64152F);
             transition: transform 0.25s ease, filter 0.25s ease;
             margin-bottom: 16px;
             animation: latido 1.6s infinite ease-in-out;
         }
 
+        #entry-button::after {
+            content: " ♥";
+            color: #8F3555;
+        }
+
         #entry-button:not(:disabled):hover {
             transform: scale(1.06);
-            filter: drop-shadow(0 0 24px #7EC8FF) drop-shadow(0 0 42px #4DA3FF);
+            filter: drop-shadow(0 0 22px #8F3555) drop-shadow(0 0 40px #4A1024);
         }
 
         #entry-button:disabled {
@@ -161,11 +166,58 @@
 
         #entry-text {
             font-size: 1.45em;
-            color: #7EC8FF;
-            text-shadow: 0 0 10px #4DA3FF;
+            color: #D8A2B4;
+            text-shadow: 0 0 10px #64152F;
             text-align: center;
             letter-spacing: 1px;
             line-height: 1.15;
+        }
+
+        #birthday-notes {
+            position: fixed;
+            inset: 0;
+            z-index: 10001;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .birthday-note {
+            position: absolute;
+            width: max-content;
+            max-width: min(310px, calc(100vw - 32px));
+            padding: 12px 17px;
+            border: 1px solid rgba(160,91,115,0.75);
+            border-radius: 18px 18px 18px 5px;
+            background: linear-gradient(145deg, rgba(91,27,49,0.98), rgba(54,12,28,0.98));
+            box-shadow: 0 8px 24px rgba(22,3,11,0.48), 0 0 18px rgba(111,23,52,0.4);
+            color: #F5E8ED;
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            line-height: 1.25;
+            text-align: center;
+            overflow-wrap: anywhere;
+            opacity: 0;
+            transform: rotate(var(--note-tilt));
+            animation: noteDrift 6s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+        }
+
+        .birthday-note.is-leaving {
+            animation: noteFadeAway 0.35s ease forwards;
+        }
+
+        @keyframes noteFadeAway {
+            from { opacity: 1; transform: translate(0, 0) rotate(var(--note-tilt)) scale(1); }
+            to { opacity: 0; transform: translate(18px, -30px) rotate(8deg) scale(0.88); }
+        }
+
+        @keyframes noteDrift {
+            0%   { opacity: 0; transform: translate(0, 12px) rotate(var(--note-tilt)) scale(0.88); }
+            12%  { opacity: 1; transform: translate(0, 0) rotate(var(--note-tilt)) scale(1); }
+            72%  { opacity: 1; transform: translate(var(--note-drift), -34px) rotate(calc(var(--note-tilt) + 2deg)); }
+            100% { opacity: 0; transform: translate(var(--note-drift), -60px) rotate(calc(var(--note-tilt) + 4deg)); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .birthday-note { animation-duration: 0.5s; }
         }
 
         /* Love card overlay */
@@ -188,14 +240,14 @@
             width: min(90vw, 400px);
             max-height: calc(100dvh - 32px);
             border-radius: 20px;
-            box-shadow: 0 0 30px #E8A2A8, 0 0 50px #D97F88;
+            box-shadow: 0 0 30px #76213D, 0 0 50px #4A1024;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 16px;
             text-align: center;
             overflow: hidden;
-            background: #100b13;
+            background: #1B0A12;
             cursor: default;
         }
 
@@ -264,9 +316,10 @@
              src="fotos/DJI.JPG"
              alt="Foto especial"
              onerror="this.onerror=null;this.src='fotos/foto1.jpg'">
-        <button id="entry-button">preciona aqui amor</button>
-        <div id="entry-text">feliz cumpleaños💙</div>
+        <button id="entry-button">Adivina la hora</button>
+        <div id="entry-text">Tienes que adivinar la hora...</div>
     </div>
+    <div id="birthday-notes" aria-live="polite"></div>
 
     <div id="love-card-overlay" onclick="hideLoveCard()">
         <div id="love-card">
@@ -323,7 +376,7 @@
                     if (s.alpha > 1)    { s.alpha = 1;    s.dir = -1; }
                     if (s.alpha < 0.04) { s.alpha = 0.04; s.dir =  1; }
                     const color = s.blue
-                        ? `hsl(210,100%,${75+Math.random()*20}%)`
+                        ? `hsl(338,100%,${75+Math.random()*20}%)`
                         : `hsl(0,0%,${85+Math.random()*15}%)`;
                     ctx.save();
                     ctx.globalAlpha = s.alpha;
@@ -372,10 +425,10 @@
         blackHole: { radius: 12, segments: 64, color1: '#000000', color2: '#050505' },
         accretionRing: {
             innerRadius: 18, outerRadius: 32, segments: 128,
-            centerColor: '#FF8FA3', midColor: '#E8102A', edgeColor: '#8B0000',
+            centerColor: '#A85070', midColor: '#76213D', edgeColor: '#3A0B1C',
             emissiveIntensity: 1.0,
         },
-        heartStars: { count: 2500, scale: 14, yOffset: 45, size: 0.9, color: '#FF2255' },
+        heartStars: { count: 2500, scale: 14, yOffset: 45, size: 0.9, color: '#9A3557' },
         particles: {
             coreStars:      { count: 20000, radius: 120, maxHeight: 60, size: 0.25 },
             sphericalHalo:  { count: 18000, radiusXZ: 110, radiusY: 55, size: 0.18, minDistFromCenter: 28 },
@@ -414,18 +467,18 @@
                     { text: "siempre te amaran", image: "fotos/foto25.jpg" }
                 ],
                 colors: [
-                    { fill:'#E8A2A8', shadow:'#D97F88' },
-                    { fill:'#F6D1D5', shadow:'#E8A2A8' },
-                    { fill:'#F2B9BF', shadow:'#D97F88' }
+                    { fill:'#B76B85', shadow:'#4A1024' },
+                    { fill:'#8F3555', shadow:'#3A0B1C' },
+                    { fill:'#D8A2B4', shadow:'#64152F' }
                 ]
             },
             emojis: {
                 count: 25, size: 12, minRadius: null, maxRadius: 120,
                 content: ['💖','💘','💞','💕','❤️','💐','🌸','🌹','🌺','🌷'],
                 colors: [
-                    { fill:'#F6D1D5', shadow:'#D97F88' },
-                    { fill:'#F2B9BF', shadow:'#E8A2A8' },
-                    { fill:'#E8A2A8', shadow:'#D97F88' }
+                    { fill:'#B76B85', shadow:'#64152F' },
+                    { fill:'#8F3555', shadow:'#3A0B1C' },
+                    { fill:'#D8A2B4', shadow:'#4A1024' }
                 ]
             }
         },
@@ -455,7 +508,7 @@
         shootingStars: { enabled: true, spawnProbability: 0.012, speed: 1.2 },
         lighting: {
             ambientLight: { color:'#ffffff', intensity:0.1 },
-            pointLight:   { color:'#E8A2A8', intensity:2.5, distance:350 }
+            pointLight:   { color:'#76213D', intensity:2.5, distance:350 }
         },
         bloomEffect: { threshold:0.68, strength:0.7, radius:0.5 },
         cameraControls: { minDistance:5, maxDistance:Infinity }
@@ -593,7 +646,7 @@
         })));
         // Segunda capa más grande y translúcida para el resplandor (glow)
         scene.add(new THREE.Points(geo,new THREE.PointsMaterial({
-            size:hc.size*3.5, color:new THREE.Color('#FF0044'),
+            size:hc.size*3.5, color:new THREE.Color('#4A1024'),
             blending:THREE.AdditiveBlending, transparent:true, opacity:0.18, sizeAttenuation:true
         })));
     }
@@ -825,58 +878,67 @@
     const ENTRY_LOCK_KEY = 'cumple-entry-locked-until';
     const entryButton = document.getElementById('entry-button');
     const entryText = document.getElementById('entry-text');
+    const birthdayNotes = document.getElementById('birthday-notes');
+    const birthdayPhrases = [
+        'Que este nuevo año te regale tanta felicidad como la que tú nos das. 💗',
+        'Tu manera de ser con nostros hace más bonito cualquier lugar. ✨',
+        'Hoy celebro tu cumpleaños, por que eres increíble. ¡Feliz cumpleaños! 🎂',
+        'Mereces un universo entero de momentos hermosos. 🌟',
+        'Nunca olvides lo increíble, valiente, valiosa y maravillosa que eres. 💖',
+        'Que todos tus sueños encuentren el camino para hacerse realidad solo mira hasta donde has llegado. 🌷',
+        'Tu forma de ser es uno de los regalos más lindos para quienes te queremos. 🎁',
+        'Ojalá hoy recibas todo el cariño que le das al mundo y si te falta cariño are lo mejor de mi por darte todo el que necesitas. 💕',
+        'te amamos mucho pollito. 🥳',
+        'Feliz cumpleaños a la dueña de un corazón enorme y precioso. 💗'
+    ];
+    let phraseIndex = 0;
+    let noteCount = 0;
 
-    function updateEntryLock() {
-        const savedUnlockAt = localStorage.getItem(ENTRY_LOCK_KEY);
-        if (savedUnlockAt === null) {
-            entryButton.disabled = false;
-            entryButton.textContent = 'preciona aqui amor';
-            entryText.textContent = 'feliz cumpleaños💙';
-            return;
-        }
-
-        const unlockAt = Number(savedUnlockAt);
-        if (!Number.isFinite(unlockAt)) {
-            localStorage.removeItem(ENTRY_LOCK_KEY);
-            entryButton.disabled = false;
-            entryButton.textContent = 'preciona aqui amor';
-            entryText.textContent = 'feliz cumpleaños💙';
-            return;
-        }
-
-        if (unlockAt <= Date.now()) {
-            entryButton.disabled = false;
-            entryButton.textContent = 'Ya puedes verme 💙';
-            entryText.textContent = 'feliz cumpleaños💙';
-            return;
-        }
-
-        entryButton.disabled = true;
-        entryButton.textContent = 'Vuelve mañana a la 1:00 p. m.';
-        entryText.textContent = 'Te amo, pero hasta mañana podrás verme a la 1:00 de la tarde.';
-        window.setTimeout(updateEntryLock, unlockAt - Date.now());
+    function removeBirthdayNote(note) {
+        if (!note || !note.isConnected) return;
+        note.classList.add('is-leaving');
+        window.setTimeout(() => note.remove(), 350);
     }
 
-    updateEntryLock();
-
-    entryButton.addEventListener('click', () => {
-        if (entryButton.disabled) return;
-
-        if (localStorage.getItem(ENTRY_LOCK_KEY) === null) {
-            const unlockAt = new Date();
-            unlockAt.setDate(unlockAt.getDate() + 1);
-            unlockAt.setHours(13, 0, 0, 0);
-            localStorage.setItem(ENTRY_LOCK_KEY, String(unlockAt.getTime()));
-            updateEntryLock();
-            return;
+    function showBirthdayNote() {
+        noteCount++;
+        if (noteCount % 2 === 0) {
+            removeBirthdayNote(birthdayNotes.firstElementChild);
         }
 
-        const unlockAt = Number(localStorage.getItem(ENTRY_LOCK_KEY));
-        if (!Number.isFinite(unlockAt) || unlockAt > Date.now()) return;
+        const note = document.createElement('div');
+        note.className = 'birthday-note';
+        note.textContent = birthdayPhrases[phraseIndex];
+        phraseIndex = (phraseIndex + 1) % birthdayPhrases.length;
+        const tilt = (Math.random() * 8 - 4).toFixed(1);
+        note.style.setProperty('--note-tilt', `${tilt}deg`);
+        note.style.setProperty('--note-drift', `${Math.round(Math.random() * 48 - 24)}px`);
+        birthdayNotes.appendChild(note);
 
+        const buttonBounds = entryButton.getBoundingClientRect();
+        const noteBounds = note.getBoundingClientRect();
+        const horizontalOffset = (Math.random() - 0.5) * Math.min(150, window.innerWidth * 0.35);
+        const left = Math.max(12, Math.min(
+            window.innerWidth - noteBounds.width - 12,
+            buttonBounds.left + buttonBounds.width / 2 - noteBounds.width / 2 + horizontalOffset
+        ));
+        const top = Math.max(12, Math.min(
+            window.innerHeight - noteBounds.height - 12,
+            buttonBounds.top - noteBounds.height - 18 + Math.random() * 48
+        ));
+        note.style.left = `${left}px`;
+        note.style.top = `${top}px`;
+
+        if (birthdayNotes.children.length > 2) {
+            removeBirthdayNote(birthdayNotes.firstElementChild);
+        }
+
+        window.setTimeout(() => removeBirthdayNote(note), 8000);
+    }
+
+    function openBirthdayExperience() {
         localStorage.removeItem(ENTRY_LOCK_KEY);
-
-        document.getElementById('entry-modal').style.display  = 'none';
+        document.getElementById('entry-modal').style.display = 'none';
         document.getElementById('dark-overlay').style.display = 'none';
         window.stopIntroStars();
         init();
@@ -888,6 +950,67 @@
             music.currentTime = 0;
             music.play().catch(e => console.warn('Audio:', e));
         }, { once: true });
+    }
+
+    function updateEntryLock() {
+        const savedUnlockAt = localStorage.getItem(ENTRY_LOCK_KEY);
+        if (savedUnlockAt === null) {
+            entryButton.disabled = false;
+            entryButton.textContent = 'Adivina la hora';
+            entryText.textContent = 'Tienes que adivinar la hora...';
+            return;
+        }
+
+        const unlockAt = Number(savedUnlockAt);
+        if (!Number.isFinite(unlockAt)) {
+            localStorage.removeItem(ENTRY_LOCK_KEY);
+            entryButton.disabled = false;
+            entryButton.textContent = 'Adivina la hora';
+            entryText.textContent = 'Tienes que adivinar la hora...';
+            return;
+        }
+
+        if (unlockAt <= Date.now()) {
+            entryButton.disabled = false;
+            entryButton.textContent = 'Tu sorpresa te espera';
+            entryText.textContent = 'Parece que ya encontraste la hora...';
+            return;
+        }
+
+        entryButton.disabled = false;
+        entryButton.textContent = 'Adivina la hora';
+        entryText.textContent = 'Tienes que adivinar la hora...';
+        window.setTimeout(updateEntryLock, unlockAt - Date.now());
+    }
+
+    updateEntryLock();
+
+    entryButton.addEventListener('click', () => {
+        const savedUnlockAt = localStorage.getItem(ENTRY_LOCK_KEY);
+        if (savedUnlockAt === null) {
+            const unlockAt = new Date();
+            unlockAt.setDate(unlockAt.getDate() + 1);
+            unlockAt.setHours(13, 0, 0, 0);
+            localStorage.setItem(ENTRY_LOCK_KEY, String(unlockAt.getTime()));
+            updateEntryLock();
+            showBirthdayNote();
+            return;
+        }
+
+        const unlockAt = Number(savedUnlockAt);
+        if (!Number.isFinite(unlockAt)) {
+            localStorage.removeItem(ENTRY_LOCK_KEY);
+            updateEntryLock();
+            showBirthdayNote();
+            return;
+        }
+
+        if (unlockAt > Date.now()) {
+            showBirthdayNote();
+            return;
+        }
+
+        openBirthdayExperience();
     });
 
     </script>
